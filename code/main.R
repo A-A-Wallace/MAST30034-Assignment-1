@@ -44,15 +44,27 @@ for (c in 1:6){
 }
 
 # Plotting
-jpeg(filename = "TC plots.jpeg", quality = 100)
-par(mfrow = c(3,2))
+png(filename = "plots/TC1plot.png")
+plot(x = 1:240, y = TC[,1], type = "l")
+dev.off()
+png(filename = "plots/TC2plot.png")
+plot(x = 1:240, y = TC[,2], type = "l")
+dev.off()
+png(filename = "plots/TC3plot.png")
+plot(x = 1:240, y = TC[,3], type = "l")
+dev.off()
+png(filename = "plots/TC4plot.png")
+plot(x = 1:240, y = TC[,4], type = "l")
+dev.off()
+png(filename = "plots/TC5plot.png")
+plot(x = 1:240, y = TC[,5], type = "l")
+dev.off()
+png(filename = "plots/TC6plot.png")
+plot(x = 1:240, y = TC[,6], type = "l")
+dev.off()
 
 
-
-
-
-
-
+# 
 
 
 
