@@ -263,5 +263,41 @@ library("MASS")
 
 PCTC = svd(TC)
 
+png(filename = "plots/eigenvalues.png")
+plot(x = 1:6, PCTC$d)
+dev.off()
+
+Z = PCTC$u
+
+png(filename = "plots/Z1TC1.png")
+plot(1:240, TC[,1], type = "l")
+points(1:240, Z[,1], type = "l")
+dev.off()
+png(filename = "plots/Z2TC2.png")
+plot(1:240, TC[,2], type = "l")
+points(1:240, Z[,2], type = "l")
+dev.off()
+png(filename = "plots/Z3TC3.png")
+plot(1:240, TC[,3], type = "l")
+points(1:240, Z[,3], type = "l")
+dev.off()
+png(filename = "plots/Z4TC4.png")
+plot(1:240, TC[,4], type = "l")
+points(1:240, Z[,4], type = "l")
+dev.off()
+png(filename = "plots/Z5TC5.png")
+plot(1:240, TC[,5], type = "l")
+points(1:240, Z[,5], type = "l")
+dev.off()
+png(filename = "plots/Z6TC6.png")
+plot(1:240, TC[,6], type = "l")
+points(1:240, Z[,6], type = "l")
+dev.off()
+
+
+
+
+
+
 
 
