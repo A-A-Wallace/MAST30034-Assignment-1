@@ -149,8 +149,6 @@ X = (TC + gammaT) %*% (SM + gammaS)
 
 Xsample = X[, sample.int(441, 100)]
 
-library(ggplot2)
-
 Xsample = data.frame(Xsample)
 
 png(filename = "plots/XsamplesPlot.png")
@@ -160,11 +158,12 @@ for (i in 2:100){
 }
 dev.off()
 
-png(filename = "plots/XPlot.png")
-plot(1:240, X[,1], type = "l")
-for (i in 2:441){
-  points(1:240, X[,i], type = "l")
+Xvars = c()
+for (i in 1:441){
+  Xvars[i] = var(X[,i])
 }
+png(filename = "plots/XPlot.png")
+plot(1:441, Xvars)
 dev.off()
 
 for (c in 1:441){
@@ -207,14 +206,35 @@ Arr = DtDrrinv %*% t(TC) %*% X
 
 Drr = X %*% t(Arr)
 
-ctslrdata = c()
+ctlsr = c()
+for (i in 1:6){
+  ctlsr[i] = abs(cor(TC[,i], Dlsr[,i]))
+}
 
+ctrr = c()
+for (i in 1:6){
+  ctrr[i] = abs(cor(TC[,i], Drr[,i]))
+}
+print("sum of Ctlsr: ")
+print(sum(ctlsr))
+print("sum of Ctrr: ")
+print(sum(ctrr))
 
+newLambda = 1000
+newDtDrrinv = solve(t(TC) %*% TC + newLambda * 441 * diag(nrow = 6, ncol = 6))
+newArr = newDtDrrinv %*% t(TC) %*% X
+
+newDrr = X %*% t(newArr)
+
+png(filename = "plots/ArrAlsrPlot.png")
+plot(Alsr[1,], newArr[1,])
+dev.off()
 
 # Lasso regression
 
 # Function taken from the assignment description
 lassoRegression = function(rho){
+  N = 441
   step <- 1/(norm(TC %*% t(TC)) * 1.1)
   thr <- rho*N*step
   Ao <- matrix(0, nsrcs, 1)
@@ -232,9 +252,10 @@ lassoRegression = function(rho){
     }
     Alr[,k] <- A
   }
+  return (Alr)
 }
 
-
+lassoRegression(0)
 
 
 
