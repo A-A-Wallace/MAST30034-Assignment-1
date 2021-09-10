@@ -255,13 +255,13 @@ lassoRegression = function(rho){
   return (Alr)
 }
 
-lassoRegression(0)
+#lassoRegression(0)
 
+# Principal Component Regression
 
+library("MASS")
 
-
-
-
+PCTC = svd(TC)
 
 
 

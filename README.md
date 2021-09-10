@@ -6,3 +6,4 @@ The code should be run from the Mast30034-Assignment-1 folder using the followin
 Dependencies:
   R libraries:
     - corrplot
+    - MASS
