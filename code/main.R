@@ -103,14 +103,136 @@ corrplot(cor(t(SM)))
 dev.off()
 
 
+# Adding Noise
+
+gammaTdata = c()
+
+for (i in 1:1440){
+  gammaTdata[i] = rnorm(1, sd = sqrt(0.25))
+}
+
+gammaT = matrix(gammaTdata, nrow = 240, ncol = 6)
+
+gammaSdata = c()
+
+for (i in 1:2646){
+  gammaSdata[i] = rnorm(1, sd = sqrt(0.015))
+}
+
+gammaS = matrix(gammaSdata, nrow = 6, ncol = 441)
+
+png(filename = "plots/gammaTcorrelationPlot.png")
+corrplot(cor(gammaT))
+dev.off()
+
+png(filename = "plots/gammaScorrelationPlot.png")
+corrplot(cor(t(gammaS)))
+dev.off()
+
+png(filename = "plots/gammaThistogram.png")
+hist(gammaTdata)
+dev.off()
+
+png(filename = "plots/gammaShistogram.png")
+hist(gammaSdata)
+dev.off()
+
+gammaProd = gammaT %*% gammaS
+
+png(filename = "plots/gammaProductCorrelationPlot.png")
+corrplot(cor(gammaProd))
+dev.off()
+
+# Building X
+
+X = (TC + gammaT) %*% (SM + gammaS)
+
+Xsample = X[, sample.int(441, 100)]
+
+library(ggplot2)
+
+Xsample = data.frame(Xsample)
+
+png(filename = "plots/XsamplesPlot.png")
+plot(1:240, Xsample[,1], type = "l")
+for (i in 2:100){
+  points(1:240, Xsample[,i], type = "l")
+}
+dev.off()
+
+png(filename = "plots/XPlot.png")
+plot(1:240, X[,1], type = "l")
+for (i in 2:441){
+  points(1:240, X[,i], type = "l")
+}
+dev.off()
+
+for (c in 1:441){
+  m = mean(X[,c])
+  std = sd(X[,c])
+  X[,c] = X[,c] - m
+  X[,c] = X[,c] / std
+}
+
+# Finding A and D using least squares estimation
+
+DtDinv = solve(t(TC) %*% TC)
+Alsr = DtDinv %*% t(TC) %*% X
+
+Dlsr = X %*% t(Alsr)
+
+png(filename = "plots/retrievedTCs.png")
+plot(x = 1:240, y = Dlsr[,1], type = "l")
+points(x = 1:240, y = Dlsr[,2], type = "l")
+points(x = 1:240, y = Dlsr[,3], type = "l")
+points(x = 1:240, y = Dlsr[,4], type = "l")
+points(x = 1:240, y = Dlsr[,5], type = "l")
+points(x = 1:240, y = Dlsr[,6], type = "l")
+dev.off()
+
+png(filename = "plots/Dlsr3X30scatterplot.png")
+plot(x = Dlsr[,3], y = X[,30])
+dev.off()
+
+png(filename = "plots/Dlsr4X30scatterplot.png")
+plot(x = Dlsr[,4], y = X[,30])
+dev.off()
+
+
+# Finding A and D using ridge regression
+
+lambda = 0.5
+DtDrrinv = solve(t(TC) %*% TC + lambda * 441 * diag(nrow = 6, ncol = 6))
+Arr = DtDrrinv %*% t(TC) %*% X
+
+Drr = X %*% t(Arr)
+
+ctslrdata = c()
 
 
 
+# Lasso regression
 
-
-
-
-
+# Function taken from the assignment description
+lassoRegression = function(rho){
+  step <- 1/(norm(TC %*% t(TC)) * 1.1)
+  thr <- rho*N*step
+  Ao <- matrix(0, nsrcs, 1)
+  A <- matrix(0, nsrcs, 1)
+  Alr <- matrix(0, nsrcs, x1*x2)
+  
+  for (k in 1:(x1*x2)) {
+    A <- Ao+step*(t(TC) %*% (X[,k]-(TC%*%Ao)))
+    A <- (1/(1+thr)) * (sign(A)*pmax(replicate(nsrcs, 0), abs(A)-thr))
+    
+    for (i in 1:10) {
+      Ao <- A
+      A <- Ao+step * (t(TC)%*%(X[,k]-(TC%*%Ao)))
+      A <- (1/(1+thr)) * (sign(A)*pmax(replicate(nsrcs, 0), abs(A)-thr))
+    }
+    Alr[,k] <- A
+  }
+}
 
 
 
